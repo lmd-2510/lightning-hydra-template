@@ -1,0 +1,43 @@
+# @package _global_
+# configs/experiment/run_resnet_cv.yaml
+
+
+# Để chạy thử nghiệm này, gõ lệnh:
+# python src/train.py experiment=run_resnet_cv
+
+defaults:
+  - override /data: muct_data
+  - override /model: resnet152
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+# Gắn tag để sau này dễ lọc trên bảng tin (WandB / TensorBoard)
+tags: ["cv", "resnet152", "kaggle"]
+
+seed: 12345
+
+trainer:
+  min_epochs: 10
+  max_epochs: 50  
+  accelerator: gpu       # Bắt buộc bật để dùng Card màn hình rời trên Kaggle
+  devices: 1             # Dùng 1 GPU (Nếu bạn bật Kaggle 2xT4 thì để là 2)
+  precision: 16-mixed    # Kỹ thuật "Mixed Precision": Ép mô hình dùng số thập phân 16-bit thay vì 32-bit. Giúp train nhanh gấp đôi và tiết kiệm một nửa RAM GPU!
+
+model:
+  _target_: src.models.cv_module.CVLitModule
+  num_landmarks: 75
+  optimizer:
+    lr: 0.001 
+  compile: false
+
+data:
+  batch_size: 32   # ResNet152 khá nặng, nên để batch_size nhỏ (32 hoặc 16) kẻo tràn RAM
+  data_dir: ${paths.data_dir}/muct 
+
+logger:
+  wandb:
+    tags: ${tags}
+    group: "cv_project"
+  aim:
+    experiment: "resnet152_run"

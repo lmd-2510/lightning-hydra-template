@@ -1,0 +1,13 @@
+# 1. Khai báo cái Vỏ Case của bạn
+_target_: src.models.cv_module.CVLitModule
+
+# 2. Khai báo biến 'net' (Hydra sẽ nhét cái này vào hàm __init__ ở trên)
+net:
+  _target_: torchvision.models.resnet152 # Lấy thẳng ResNet152 từ thư viện PyTorch
+  weights: DEFAULT # Dùng tạ có sẵn (Pretrained)
+  
+# 3. Khai báo biến 'optimizer' (Hydra cũng sẽ nhét nó vào __init__)
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001

@@ -1,0 +1,6 @@
+_target_: src.data.muct_datamodule.MUCTDataModule
+
+data_dir: ${paths.data_dir}/muct 
+num_landmarks: 75
+batch_size: 16
+num_workers: 2
