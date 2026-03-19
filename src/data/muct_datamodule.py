@@ -55,3 +55,13 @@ class MUCTDataModule(LightningDataModule):
             pin_memory=True,
             persistent_workers=self.hparams.num_workers > 0
         )
+    
+    def test_dataloader(self):
+        return DataLoader(
+            self.val_dataset, # Mượn tạm tập val_dataset (20%) để chấm điểm
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            shuffle=False,    # Lưu ý: Khi test tuyệt đối không xáo trộn ảnh (shuffle=False)
+            pin_memory=True,
+            persistent_workers=self.hparams.num_workers > 0
+        )
