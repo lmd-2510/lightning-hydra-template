@@ -1,0 +1,2 @@
+# python src/train ...: để chạy như bình thường 
+# git commit -m "update code": để nó chỉnh sửa code đồng thời xem xét có gì nguy hiểm không 

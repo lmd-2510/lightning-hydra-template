@@ -59,7 +59,7 @@ def evaluate(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger)
 
-    object_dict = {
+    object_dict = { 
         "cfg": cfg,
         "datamodule": datamodule,
         "model": model,
