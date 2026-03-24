@@ -18,6 +18,7 @@ trainer:
 
 logger:
   wandb:
+    project: "resnet18+yolo_cv_template"
     tags: ${tags}
     group: "wflw_project"
     name: "resnet18_wflw_run1" 
