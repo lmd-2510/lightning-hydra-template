@@ -1,0 +1,24 @@
+_target_: src.models.cv_resnet18_module.FaceLitModule
+
+# Truyền mạng ResNet18 vào tham số "net" của FaceLitModule
+net:
+  _target_: src.models.components.resnet18.ResNet18Landmark
+  num_landmarks: 98
+  pretrained: true
+
+# Cấu hình Optimizer dạng Partial (để nhét tham số sau)
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.0005        # Learning rate: Rất quan trọng! Nên bắt đầu từ 5e-4 hoặc 1e-3
+  weight_decay: 0.01
+
+# (Tùy chọn) Cấu hình Scheduler để giảm LR khi mô hình có dấu hiệu chững lại
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.5
+  patience: 5
+
+compile: false # Tắt compile nếu dùng Windows, bật true nếu dùng Linux + PyTorch 2.0 để chạy nhanh hơn

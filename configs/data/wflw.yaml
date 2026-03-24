@@ -1,0 +1,6 @@
+_target_: src.data.WFLW_datamodule.WFLWDataModule 
+
+data_dir: ${paths.data_dir}/WFLW # Đường dẫn đến thư mục chứa WFLW (thường trỏ về data/WFLW)
+batch_size: 64                   # Tùy thuộc vào VRAM của GPU (nếu hết RAM thì giảm xuống 32, 16)
+num_workers: 4                   # Số luồng CPU tải dữ liệu (thường để 4 hoặc 8)
+pin_memory: true

@@ -1,0 +1,23 @@
+# @package _global_
+
+# Kế thừa các cấu hình mặc định, nhưng ghi đè data và model bằng 2 file ta vừa tạo
+defaults:
+  - override /data: wflw
+  - override /model: resnet18
+
+# Đặt tên cho đợt train này để dễ theo dõi trên TensorBoard / WandB
+tags: ["wflw", "resnet18", "landmark_98"]
+
+# Tinh chỉnh lại Trainer của PyTorch Lightning
+trainer:
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu   
+  devices: 1
+  precision: 16-mixed 
+
+logger:
+  wandb:
+    tags: ${tags}
+    group: "wflw_project"
+    name: "resnet18_wflw_run1" 

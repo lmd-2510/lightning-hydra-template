@@ -1,2 +1,6 @@
-# python src/train ...: để chạy như bình thường 
-# git commit -m "update code": để nó chỉnh sửa code đồng thời xem xét có gì nguy hiểm không 
+# pytest: lệnh nên gõ trước để xem code có bị crash không
+
+# python src/train.py experiment=run_resnet_model: 
+
+# (git add .) git commit -m "update code": để nó chỉnh sửa code đồng thời xem xét có gì nguy hiểm không 
+
