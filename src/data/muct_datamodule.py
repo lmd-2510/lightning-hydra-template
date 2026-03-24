@@ -4,7 +4,6 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torch
 
-# Gọi "Anh Đầu Bếp" từ thư mục components ra để dùng
 from src.data.components.muct_dataset import MUCTDataset
 
 class MUCTDataModule(LightningDataModule):
@@ -22,7 +21,6 @@ class MUCTDataModule(LightningDataModule):
         ], keypoint_params=A.KeypointParams(format='xy', remove_invisible=False)) 
 
     def setup(self, stage=None):
-        # Truyền thông số vào cho anh Đầu bếp
         full_dataset = MUCTDataset(
             data_dir=self.hparams.data_dir, 
             num_landmarks=self.hparams.num_landmarks,
