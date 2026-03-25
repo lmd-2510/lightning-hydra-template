@@ -21,4 +21,7 @@ scheduler:
   factor: 0.5
   patience: 5
 
+smoothing:
+  alpha: 0.25  # Thử nghiệm trong khoảng 0.2 - 0.4 cho livecam
+
 compile: false # Tắt compile nếu dùng Windows, bật true nếu dùng Linux + PyTorch 2.0 để chạy nhanh hơn

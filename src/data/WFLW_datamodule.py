@@ -25,20 +25,48 @@ class WFLWDataModule(LightningDataModule):
         self.data_val: Optional[Dataset] = None
         self.data_test: Optional[Dataset] = None
 
-        # 1. Transform cho tập Train (Có Augmentation mạnh)
         self.train_transforms = A.Compose([
             A.Resize(self.hparams.image_size, self.hparams.image_size),
-            # Xoay nhẹ (+/- 15 độ), phóng to/thu nhỏ (+/- 10%), dịch chuyển nhẹ
-            A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.1, rotate_limit=15, p=0.5, border_mode=0),
-            # Thay đổi độ sáng, độ tương phản
-            A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=0.5),
-            # Làm mờ ảnh ngẫu nhiên (giả lập các ảnh kém chất lượng trong WFLW)
-            A.GaussianBlur(blur_limit=(3, 7), p=0.3),
-            # Chuẩn hóa ảnh về ImageNet stats (thường dùng chung cho các mô hình CNN/ViT)
+            
+            # 1. BIẾN ĐỔI KHÔNG GIAN (SPATIAL TRANSFORMS)
+            # Dịch chuyển, thu phóng, xoay. Giữ nguyên border_mode=0 (viền đen) để tránh bị nhân đôi nửa khuôn mặt ở viền.
+            A.ShiftScaleRotate(shift_limit=0.06, scale_limit=0.15, rotate_limit=10, p=0.5, border_mode=0),
+            
+            # Thêm Perspective: Cực kỳ hữu ích cho WFLW để giả lập các góc chụp nghiêng của camera
+            A.Perspective(scale=(0.02, 0.08), p=0.3),
+
+            # 2. BIẾN ĐỔI CẤP ĐỘ PIXEL (MÀU SẮC & ÁNH SÁNG)
+            A.OneOf([
+                A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=1.0),
+                A.RandomBrightnessContrast(brightness_limit=0.25, contrast_limit=0.25, p=1.0),
+                A.CLAHE(clip_limit=2.0, tile_grid_size=(8, 8), p=1.0), # Cân bằng sáng cục bộ, rất tốt cho ảnh bị ngược sáng
+            ], p=0.6),
+
+            # 3. GIẢ LẬP ẢNH KÉM CHẤT LƯỢNG (NHIỄU & MỜ)
+            A.OneOf([
+                A.GaussianBlur(blur_limit=(3, 7), p=1.0),
+                A.MotionBlur(blur_limit=5, p=1.0), # Giả lập chụp mặt khi đang chuyển động
+                A.GaussNoise(var_limit=(10.0, 50.0), p=1.0), # Nhiễu hạt camera
+                A.ImageCompression(quality_lower=50, quality_upper=95, p=1.0), # Giả lập ảnh bị nén thấp trên web
+            ], p=0.5),
+
+            # 4. CHE KHUẤT (OCCLUSION) - Cải thiện khả năng chống chịu khi bị che mặt (đeo kính, tóc che, vật cản)
+            A.CoarseDropout(
+                max_holes=4, # Tạo tối đa 4 vùng che
+                max_height=int(self.hparams.image_size * 0.2), # Vùng che tối đa bằng 20% kích thước ảnh
+                max_width=int(self.hparams.image_size * 0.2),
+                min_holes=1,
+                min_height=int(self.hparams.image_size * 0.05),
+                min_width=int(self.hparams.image_size * 0.05),
+                fill_value=0, # Phủ màu đen (pixel value = 0)
+                p=0.4 # Xác suất 40% ảnh sẽ bị che
+            ),
+
+            # 5. CHUẨN HÓA & TENSOR
             A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ToTensorV2(),
-        ], keypoint_params=A.KeypointParams(format='xy', remove_invisible=False)) 
-        # remove_invisible=False: Đảm bảo luôn trả về đủ 98 điểm dù có điểm bị văng nhẹ ra ngoài lề sau khi xoay
+            
+        ], keypoint_params=A.KeypointParams(format='xy', remove_invisible=False))
 
         # 2. Transform cho tập Val & Test (Chỉ Resize, Normalize và ToTensor)
         self.val_test_transforms = A.Compose([
