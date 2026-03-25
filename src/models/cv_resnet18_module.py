@@ -4,8 +4,8 @@ from lightning import LightningModule
 from torchmetrics import MeanMetric, MinMetric
 import torchvision.models as models
 
-
 def compute_nme(preds, targets):
+    """Tính toán Normalized Mean Error (NME)"""
     B = preds.shape[0]
 
     preds = preds.view(B, -1, 2)
@@ -14,7 +14,7 @@ def compute_nme(preds, targets):
     diff = torch.norm(preds - targets, dim=2)
     mean_error = diff.mean(dim=1)
 
-    # vẫn normalize theo landmark bbox
+    # Normalize theo landmark bbox
     x_min = targets[:, :, 0].min(dim=1).values
     x_max = targets[:, :, 0].max(dim=1).values
     y_min = targets[:, :, 1].min(dim=1).values
@@ -26,7 +26,6 @@ def compute_nme(preds, targets):
 
     return nme.mean()
 
-
 class FaceLitModule(LightningModule):
     def __init__(
         self,
@@ -35,9 +34,12 @@ class FaceLitModule(LightningModule):
         scheduler: torch.optim.lr_scheduler = None,
         num_landmarks: int = 98,
         compile: bool = False,
+        **kwargs, # <--- CHIẾC TÚI THẦN KỲ: Hứng tất cả tham số bổ sung từ config (như smoothing)
     ):
         super().__init__()
 
+        # save_hyperparameters sẽ lưu toàn bộ arguments vào self.hparams
+        # bao gồm cả cái 'smoothing' nằm trong **kwargs
         self.save_hyperparameters(logger=False, ignore=['net'])
 
         self.net = net
@@ -110,6 +112,7 @@ class FaceLitModule(LightningModule):
 
     # ---------------- OPTIM ----------------
     def configure_optimizers(self):
+        # Lưu ý: hparams giờ đây đã chứa cả tham số từ **kwargs
         optimizer = self.hparams.optimizer(params=self.parameters())
 
         if self.hparams.scheduler is not None:
@@ -122,6 +125,7 @@ class FaceLitModule(LightningModule):
                     "monitor": "val/nme",
                     "interval": "epoch",
                     "frequency": 1,
+                    "offset": 0,
                 },
             }
 
