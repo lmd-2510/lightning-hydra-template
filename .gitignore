@@ -152,3 +152,6 @@ configs/local/default.yaml
 
 # Aim logging
 .aim
+
+# Chặn chính xác file resnet18 trong thư mục checkpoints
+checkpoints/resnet18_wflw_weights.pth
