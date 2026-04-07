@@ -52,14 +52,17 @@ class WFLWDataset(Dataset):
         xmin, ymin = max(0, int(xmin)), max(0, int(ymin))
         xmax, ymax = min(img_width, int(xmax)), min(img_height, int(ymax))
 
-        # 2. CROP ẢNH (CẮT KHUÔN MẶT)
-        # Tùy chọn: Có thể mở rộng box ra một chút (margin) nếu muốn lấy thêm phần tóc/cổ
+        # Tính toán chiều rộng và cao của vùng crop
+        crop_w = xmax - xmin
+        crop_h = ymax - ymin
+
+        # 2. CROP ẢNH
         image = image.crop((xmin, ymin, xmax, ymax))
         
-        # 3. DỊCH CHUYỂN TỌA ĐỘ LANDMARK (QUAN TRỌNG)
-        # Vì ảnh đã bị cắt đi đoạn [0 -> xmin] và [0 -> ymin], ta phải trừ đi lượng này ở landmark
-        landmarks[:, 0] -= xmin
-        landmarks[:, 1] -= ymin
+        # 3. CHUẨN HÓA LANDMARKS VỀ [0, 1] (Sửa lại đoạn này)
+        # Thay vì chỉ trừ xmin, ta chia cho kích thước vùng crop
+        landmarks[:, 0] = (landmarks[:, 0] - xmin) / (crop_w + 1e-6)
+        landmarks[:, 1] = (landmarks[:, 1] - ymin) / (crop_h + 1e-6)
         
         # Chuyển về list để đưa vào Albumentations
         keypoints = landmarks.tolist()

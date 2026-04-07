@@ -87,7 +87,6 @@ while cap.isOpened():
         
         # Chuyển đổi tọa độ Landmark về khung hình gốc
         pts = landmarks.view(-1, 2).cpu().numpy()
-        pts = pts / 256.0
         pts[:, 0] = pts[:, 0] * (x2 - x1) + x1
         pts[:, 1] = pts[:, 1] * (y2 - y1) + y1
         

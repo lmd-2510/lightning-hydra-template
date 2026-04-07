@@ -45,7 +45,7 @@ class FaceLitModule(LightningModule):
         self.net = net
 
         # loss
-        self.criterion = nn.MSELoss()
+        self.criterion = nn.SmoothL1Loss() 
 
         # metrics
         self.train_loss = MeanMetric()
