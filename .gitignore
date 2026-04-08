@@ -155,3 +155,5 @@ configs/local/default.yaml
 
 # Chặn chính xác file resnet18 trong thư mục checkpoints
 checkpoints/resnet18_wflw_weights.pth
+checkpoints/epoch_008.pth
+checkpoints/epoch_008.ckpt

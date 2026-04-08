@@ -84,15 +84,28 @@ def evaluate(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
-    """Main entry point for evaluation.
-
-    :param cfg: DictConfig configuration composed by Hydra.
-    """
-    # apply extra utilities
-    # (e.g. ask for tags if none are provided in cfg, print cfg tree, etc.)
+    """Main entry point for evaluation."""
+    # 1. Áp dụng các tiện ích bổ sung (print config, tags...)
     extras(cfg)
 
-    evaluate(cfg)
+    # 2. Gọi hàm evaluate và NHẬN kết quả trả về
+    # Thay vì chỉ ghi evaluate(cfg), ta gán vào metrics và objects
+    metrics, objects = evaluate(cfg)
+
+    # 3. Tự in kết quả ra màn hình (vì task_wrapper đôi khi bỏ sót)
+    print("\n" + "="*60)
+    print("🚀 FINAL EVALUATION RESULTS 🚀")
+    print("="*60)
+    
+    if metrics:
+        for key, value in metrics.items():
+            # Chuyển đổi từ Torch Tensor sang số thực để in cho đẹp
+            val = value.item() if hasattr(value, 'item') else value
+            print(f"📌 {key}: {val:.6f}" if isinstance(val, float) else f"📌 {key}: {val}")
+    else:
+        print("❌ No metrics found! Check if self.log was called in test_step.")
+        
+    print("="*60 + "\n")
 
 
 if __name__ == "__main__":

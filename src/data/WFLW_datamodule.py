@@ -46,7 +46,7 @@ class WFLWDataModule(LightningDataModule):
             A.OneOf([
                 A.GaussianBlur(blur_limit=(3, 7), p=1.0),
                 A.MotionBlur(blur_limit=5, p=1.0), # Giả lập chụp mặt khi đang chuyển động
-                A.GaussNoise(var_limit=(10.0, 50.0), p=1.0), # Nhiễu hạt camera
+                A.GaussNoise(p=1.0), # Nhiễu hạt camera
                 A.ImageCompression(quality_lower=50, quality_upper=95, p=1.0), # Giả lập ảnh bị nén thấp trên web
             ], p=0.5),
 

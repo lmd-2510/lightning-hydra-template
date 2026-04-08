@@ -34,7 +34,7 @@ class FaceLitModule(LightningModule):
         scheduler: torch.optim.lr_scheduler = None,
         num_landmarks: int = 98,
         compile: bool = False,
-        **kwargs, # <--- CHIẾC TÚI THẦN KỲ: Hứng tất cả tham số bổ sung từ config (như smoothing)
+        **kwargs, 
     ):
         super().__init__()
 
