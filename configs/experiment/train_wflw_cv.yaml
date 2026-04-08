@@ -21,4 +21,4 @@ logger:
     project: "resnet18+yolo_cv_template"
     tags: ${tags}
     group: "wflw_project"
-    name: "resnet18_wflw_normalization_smoothl1" 
+    name: "resnet18_wflw_normalization_smoothl1_fixed" 

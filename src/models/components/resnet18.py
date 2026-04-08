@@ -17,7 +17,10 @@ class ResNet18Landmark(nn.Module):
 
         # 3. "Đập đi xây lại" lớp FC cuối cùng
         # num_landmarks * 2 vì mỗi điểm có 2 tọa độ (x, y)
-        self.backbone.fc = nn.Linear(in_features, num_landmarks * 2)
+        self.backbone.fc = nn.Sequential(
+            nn.Linear(in_features, num_landmarks * 2),
+            nn.Sigmoid() # Ép tọa độ về [0, 1]
+        )
 
     def forward(self, x: torch.Tensor):
         # Ảnh đi qua toàn bộ mạng backbone và trả về luôn 196 giá trị
